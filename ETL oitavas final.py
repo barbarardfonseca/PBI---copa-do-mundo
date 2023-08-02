@@ -60,6 +60,7 @@ oitfinal['placar'] = oitfinal[2].map(str)
 oitfinal['país2'] = oitfinal[3].map(str)
 oitfinal = oitfinal.drop(columns = [0, 1, 2, 3])
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'nan' )]
+oitfinal = oitfinal.loc[(oitfinal['datas'] !=  'nan' )]
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Relatório' )]
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Penalidades' )]
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("(", ""))
