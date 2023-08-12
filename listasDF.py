@@ -166,9 +166,9 @@ partidas_grupo_h = {
     '2018': [25, 25],
     '2022': [25, 25],
 }
-listgp81 = []
+ListOitav1 = []
 
-partidas_grupo_81 = {
+Oitavas_final_1 = {
     '1982': [47, 49],
     '1986': [50, 50],
     '1986': [53, 53],
@@ -186,9 +186,9 @@ partidas_grupo_81 = {
     '2022': [27, 28],
 }
 
-listgp82 = []
+ListOitav2 = []
 
-partidas_grupo_82 = {
+Oitavas_final_2 = {
     '1982': [51, 53],
     '1986': [48, 48],
     '1986': [54, 54],
@@ -206,9 +206,9 @@ partidas_grupo_82 = {
     '2022': [31, 33],
 }
 
-listgp83 = []
+ListOitav3 = []
 
-partidas_grupo_83 = {
+Oitavas_final_3 = {
     '1982': [55, 57],
     '1986': [49, 49],
     '1986': [51, 51],
@@ -227,9 +227,9 @@ partidas_grupo_83 = {
     '2022': [29, 30],
 }
 
-listgp84 = []
+ListOitav4 = []
 
-partidas_grupo_84 = {
+Oitavas_final_4 = {
     '1982': [59, 61],
     '1986': [47, 47],
     '1986': [52, 52],
@@ -248,25 +248,64 @@ partidas_grupo_84 = {
     '2022': [29, 30],
 }
 
+Quartas_final_1 = {
+'1934': [12,13],
+'1934': [16,16],
+'1938': [16,18],
+}
+
+Quartas_final_2 = {
+'1934': [14,15],
+'1938': [14,15]
+}
+
 listsf = []
 partidas_sf = {
-    '1930': [31,32]
+    '1930': [31,32],
+    '1934': [17,18]
+
+}
+
+terclugar = {
+    '1930': [],
+    '1934': [],
+    '1938': [],
+    '1950': [],
+    '1954': [],
+    '1958': [],
+    '1962': [],
+    '1966': [],
+    '1970': [],
+    '1974': [],
+    '1978': [],
+    '1982': [],
+    '1986': [],
+    '1990': [],
+    '1994': [],
+    '1998': [],
+    '2002': [],
+    '2006': [],
+    '2010': [],
+    '2014': [],
+    '2018': [],
+    '2022': []
 }
 
 listf = []
 partidas_final = {
-    '1930': [33]
+    '1930': [33,33],
+    '1934': [20,20]
 }
 
 
 # Itera sobre os anos no dicionário
-for ano in partidas_grupo_84:
+for ano in partidas_final:
     # Pega as informações de número inicial e final de partidas para o ano atual
-    inicio_partidas, fim_partidas = partidas_grupo_84[ano]
+    inicio_partidas, fim_partidas = partidas_final[ano]
     # Itera sobre as partidas do grupo A para o ano atual
     for i in range(inicio_partidas, fim_partidas+1):
         # Gera o código e adiciona à lista
-        listgp84.append(f'pd{ano}{i:02}')
-print(listgp84)
-test = pd.DataFrame(listgp84)
+        listf.append(f'pd{ano}{i:02}')
+print(listf)
+test = pd.DataFrame(listf)
 # test.to_excel("testelista.xlsx")
