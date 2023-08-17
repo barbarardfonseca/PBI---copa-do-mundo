@@ -37,22 +37,22 @@ for ano in range(1930,ano_atual,4):
      print(ano)
 print('end loop')
 
-dfgp81 = [pd198247, pd198248, pd198249, pd198653, pd199055, pd199452, pd199453, pd199864, pd200270, pd200668, pd200669, pd201056, pd201057, pd201428, pd201429, pd201430, pd201827, pd201828, pd202227, pd202228]
-dfgp82 = [pd198251, pd198252, pd198253, pd198654, pd199054, pd199454, pd199455, pd199868, pd200273, pd200672, pd200673, pd201060, pd201061, pd201434, pd201435, pd201833, pd201834, pd202231, pd202232, pd202233]
-dfgp83 = [pd198255, pd198256, pd198257, pd198651, pd199051, pd199457, pd199863, pd200271, pd200670, pd200671, pd201058, pd201059, pd201431, pd201432, pd201829, pd201830, pd201831, pd202229, pd202230]
-dfgp84 = [pd198259, pd198260, pd198261, pd198652, pd199051, pd199457, pd199863, pd200271, pd200670, pd200671, pd201058, pd201059, pd201431, pd201432, pd201829, pd201830, pd201831, pd202229, pd202230]
+listgp81 = [pd198247, pd198248, pd198249, pd198653, pd199055, pd199452, pd199453, pd199864, pd200270, pd200668, pd200669, pd201056, pd201057, pd201428, pd201429, pd201430, pd201827, pd201828, pd202227, pd202228]
+listgp82 = [pd198251, pd198252, pd198253, pd198654, pd199054, pd199454, pd199455, pd199868, pd200273, pd200672, pd200673, pd201060, pd201061, pd201434, pd201435, pd201833, pd201834, pd202231, pd202232, pd202233]
+listgp83 = [pd198255, pd198256, pd198257, pd198651, pd199051, pd199457, pd199863, pd200271, pd200670, pd200671, pd201058, pd201059, pd201431, pd201432, pd201829, pd201830, pd201831, pd202229, pd202230]
+listgp84 = [pd198259, pd198260, pd198261, pd198652, pd199051, pd199457, pd199863, pd200271, pd200670, pd200671, pd201058, pd201059, pd201431, pd201432, pd201829, pd201830, pd201831, pd202229, pd202230]
 
 
 oitfinal = pd.DataFrame()
 
-for df in range(81,85,1):
-  print(df)
-  for i in range(0,len(globals()[f"dfgp{df}"])):
+for value in range(81,85,1):
+  print(value)
+  for i in range(0,len(globals()[f"listgp{value}"])):
     
-    globals()[f"dfgp{df}"][i]['Fase'] = '8ª de final'
+    globals()[f"listgp{value}"][i]['Fase'] = '8ª de final'
     print('a')
-    globals()[f"dfgp{df}"][i]['Grupo'] = df - 80
-    oitfinal = pd.concat([oitfinal, globals()[f"dfgp{df}"][i]])
+    globals()[f"listgp{value}"][i]['Grupo'] = value - 80
+    oitfinal = pd.concat([oitfinal, globals()[f"listgp{df}"][i]])
 oitfinal.reset_index(inplace=True, drop=True)
 oitfinal['datas'] = oitfinal[0].map(str)
 oitfinal['país1'] = oitfinal[1].map(str)

@@ -248,6 +248,8 @@ Oitavas_final_4 = {
     '2022': [29, 30],
 }
 
+ListQuart1 = []
+
 Quartas_final_1 = {
 '1934': [12,13],
 '1934': [16,16],
@@ -275,6 +277,8 @@ Quartas_final_1 = {
 '2018': [38,39],
 '2022': [37,39],
 }
+
+ListQuart2 = []
 
 Quartas_final_2 = {
 '1934': [14,15],
@@ -377,13 +381,13 @@ partidas_final = {
 
 
 # Itera sobre os anos no dicionário
-for ano in partidas_final:
+for ano in Quartas_final_2:
     # Pega as informações de número inicial e final de partidas para o ano atual
-    inicio_partidas, fim_partidas = partidas_final[ano]
+    inicio_partidas, fim_partidas = Quartas_final_2[ano]
     # Itera sobre as partidas do grupo A para o ano atual
     for i in range(inicio_partidas, fim_partidas+1):
         # Gera o código e adiciona à lista
-        listf.append(f'pd{ano}{i:02}')
-print(listf)
+        ListQuart2.append(f'pd{ano}{i:02}')
+print(ListQuart2)
 test = pd.DataFrame(listf)
 # test.to_excel("testelista.xlsx")
