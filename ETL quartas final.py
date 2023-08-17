@@ -62,24 +62,24 @@ for value in range(1,2,1):
     globals()[f"List4F{value}"][i]['Grupo'] = value
     QuartFinal = pd.concat([QuartFinal, globals()[f"List4F{value}"][i]])
 QuartFinal.reset_index(inplace=True, drop=True)
-# QuartFinal['datas'] = QuartFinal[0].map(str)
-# QuartFinal['país1'] = QuartFinal[1].map(str)
-# QuartFinal['placar'] = QuartFinal[2].map(str)
-# QuartFinal['país2'] = QuartFinal[3].map(str)
-# QuartFinal = QuartFinal.drop(columns = [0, 1, 2, 3])
-# QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'nan' )]
-# QuartFinal = QuartFinal.loc[(QuartFinal['datas'] !=  'nan' )]
-# QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'Relatório' )]
-# QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'Penalidades' )]
-# QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace("(", ""))
-# QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace(")", ""))
+QuartFinal['datas'] = QuartFinal[0].map(str)
+QuartFinal['país1'] = QuartFinal[1].map(str)
+QuartFinal['placar'] = QuartFinal[2].map(str)
+QuartFinal['país2'] = QuartFinal[3].map(str)
+QuartFinal = QuartFinal.drop(columns = [0, 1, 2, 3])
+oitfinal = QuartFinal.loc[(QuartFinal['placar'] !=  'nan' )]
+QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'Relatório' )]
+QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'Report' )]
+QuartFinal = QuartFinal.loc[(QuartFinal['placar'] !=  'Penalidades' )]
+QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace("(", ""))
+QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace(")", ""))
 # QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace("pro.", ""))
-# QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace("pro", ""))
+QuartFinal = QuartFinal.apply(lambda x: x.astype(str).str.replace("pro", ""))
 # separar gols time 1 x time 2
 # placar = QuartFinal["placar"].str.split("–", n=1, expand=True)
 # QuartFinal['gols time 1'] = placar[0]
 # QuartFinal['gols time 2'] = placar[1]
 # QuartFinal = QuartFinal.drop(columns = ['placar'])
 
-print(QuartFinal)
+print()
 QuartFinal.to_sql("Quartas de Final", con=engine, schema = "world_cup", if_exists='replace')
