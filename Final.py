@@ -51,20 +51,20 @@ for i in range(0,len(listFinal)):
   Final = pd.concat([Final, listFinal[i]])
 
 Final.reset_index(inplace=True, drop=True)
-Final['datas'] = Final[0].map(str)
+Final['Date'] = Final[0].map(str)
 Final['Team1'] = Final[1].map(str)
-Final['placar'] = Final[2].map(str)
+Final['Score'] = Final[2].map(str)
 Final['Team2'] = Final[3].map(str)
 Final = Final.drop(columns = [0, 1, 2, 3])
 
-Final = Final.loc[(Final['placar'] !=  'Relatório' )]
-Final = Final.loc[(Final['placar'] !=  'Penalidades' )]
-Final = Final.loc[(Final['placar'] !=  'nan' )]
+Final = Final.loc[(Final['Score'] !=  'Relatório' )]
+Final = Final.loc[(Final['Score'] !=  'Penalidades' )]
+Final = Final.loc[(Final['Score'] !=  'nan' )]
 Final = Final.apply(lambda x: x.astype(str).str.replace("(", ""))
 Final = Final.apply(lambda x: x.astype(str).str.replace(")", ""))
 Final = Final.apply(lambda x: x.astype(str).str.replace("pro", ""))
 
-sepDate = Final["datas"].str.split(" ", expand=True)
+sepDate = Final["Date"].str.split(" ", expand=True)
 Final['day'] = sepDate[0]
 
 # Dicionário para mapear nomes de meses para números
@@ -84,19 +84,44 @@ meses_para_numeros = {
     }
 
 # Aplicar a transformação no DataFrame
-Final['Mês_Numérico'] = sepDate[2].map(meses_para_numeros)
+Final['NumericMonth'] = sepDate[2].map(meses_para_numeros)
 # Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
-Final['datas'] = Final.apply(lambda row: '-'.join(row[['Ano', 'Mês_Numérico','day']].astype(str)), axis=1)
+Final['Date'] = Final.apply(lambda row: '-'.join(row[['Ano', 'NumericMonth','day']].astype(str)), axis=1)
 
 
 # separar gols time 1 x time 2
-placar = Final["placar"].str.split("–", n=1, expand=True)
-Final['gols time 1'] = placar[0]
-Final['gols time 2'] = placar[1]
-Final = Final.drop(columns = ['placar'])
-
+Score = Final["Score"].str.split("–", n=1, expand=True)
+Final['gols time 1'] = Score[0]
+Final['gols time 2'] = Score[1]
 newdata = Final
 newdata = newdata[newdata.index>0]
 newdata.reset_index(inplace=True, drop=True)
-print(Final)
+###########################################################################################
+
+Final['Match'] = Final['Date'].astype(str) + Final['Team1'] + Final['Team2']
+# Crie uma nova coluna 'MatchNum_Anterior' com os valores de 'MatchNum' deslocados uma linha para cima
+Final['Match-1'] = Final['Match'].shift(1)
+
+# Comparar registros com a linha anterior
+Final['Match'] = Final['Match'] == Final['Match-1']
+# Variável temporária para armazenar o valor da coluna `MatchNum`
+match = Final['Match']
+
+match = match.replace(True, 'True')
+match = match.replace(False, 'False')
+# Validação das partidas iguais
+Final['Validação'] = match + match.shift(1)
+
+Final['Validação'].fillna('FalseFalse', inplace=True)
+mask = Final['Validação'] == 'TrueFalse'
+mask2 = Final['Validação'] == 'FalseTrue'
+mask3 = Final['Validação'] == 'FalseFalse'
+Final.loc[mask, 'Check1'] = Final.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
+Final.loc[mask2, 'Check2'] = Final.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
+MaxDupMatches = Final['Check1'].max()
+Final.loc[mask3, 'Check3'] = Final.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
+
+Final['Partidas'] = Final['Check1'].fillna(0) + Final['Check2'].fillna(0) + Final['Check3'].fillna(0)
+Final = Final.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
+
 Final.to_sql("Final", con=engine, schema = "WorldCup", if_exists='replace')

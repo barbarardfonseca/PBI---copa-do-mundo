@@ -47,29 +47,26 @@ listgp84 = [pd198259, pd198260, pd198261, pd198652, pd199051, pd199457, pd199863
 oitfinal = pd.DataFrame()
 
 for value in range(81,85,1):
-  print(value)
-  for i in range(0,len(globals()[f"listgp{value}"])):
-    
+  for i in range(0,len(globals()[f"listgp{value}"])): 
     globals()[f"listgp{value}"][i]['Stage'] = 'RoundOf16'
-    print('a')
     globals()[f"listgp{value}"][i]['Group'] = value - 80
     oitfinal = pd.concat([oitfinal, globals()[f"listgp{value}"][i]])
 oitfinal.reset_index(inplace=True, drop=True)
-oitfinal['datas'] = oitfinal[0].map(str)
+oitfinal['Date'] = oitfinal[0].map(str)
 oitfinal['Team1'] = oitfinal[1].map(str)
-oitfinal['placar'] = oitfinal[2].map(str)
+oitfinal['Score'] = oitfinal[2].map(str)
 oitfinal['Team2'] = oitfinal[3].map(str)
 oitfinal = oitfinal.drop(columns = [0, 1, 2, 3])
-oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'nan' )]
-oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Relatório' )]
-oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Penalidades' )]
+oitfinal = oitfinal.loc[(oitfinal['Score'] !=  'nan' )]
+oitfinal = oitfinal.loc[(oitfinal['Score'] !=  'Relatório' )]
+oitfinal = oitfinal.loc[(oitfinal['Score'] !=  'Penalidades' )]
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("(", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace(")", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("pro.", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("pro", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace(" Prorrogação4–3 Disputa por pênaltis", ""))
 
-sepDate = oitfinal["datas"].str.split(" ", expand=True)
+sepDate = oitfinal["Date"].str.split(" ", expand=True)
 oitfinal['day'] = sepDate[0]
 
 # Dicionário para mapear nomes de meses para números
@@ -89,16 +86,42 @@ meses_para_numeros = {
     }
 
 # Aplicar a transformação no DataFrame
-oitfinal['Mês_Numérico'] = sepDate[2].map(meses_para_numeros)
+oitfinal['NumericMonth'] = sepDate[2].map(meses_para_numeros)
 # Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
-oitfinal['datas'] = oitfinal.apply(lambda row: '-'.join(row[['Ano', 'Mês_Numérico','day']].astype(str)), axis=1)
+oitfinal['Date'] = oitfinal.apply(lambda row: '-'.join(row[['Ano', 'NumericMonth','day']].astype(str)), axis=1)
 
 
 # separar gols time 1 x time 2
-placar = oitfinal["placar"].str.split("–", n=1, expand=True)
-oitfinal['gols time 1'] = placar[0]
-oitfinal['gols time 2'] = placar[1]
-oitfinal = oitfinal.drop(columns = ['placar'])
+Score = oitfinal["Score"].str.split("–", n=1, expand=True)
+oitfinal['gols time 1'] = Score[0]
+oitfinal['gols time 2'] = Score[1]
 
-print(oitfinal)
+###########################################################################################
+
+oitfinal['Match'] = oitfinal['Date'].astype(str) + oitfinal['Team1'] + oitfinal['Team2']
+# Crie uma nova coluna 'MatchNum_Anterior' com os valores de 'MatchNum' deslocados uma linha para cima
+oitfinal['Match-1'] = oitfinal['Match'].shift(1)
+
+# Comparar registros com a linha anterior
+oitfinal['Match'] = oitfinal['Match'] == oitfinal['Match-1']
+# Variável temporária para armazenar o valor da coluna `MatchNum`
+match = oitfinal['Match']
+
+match = match.replace(True, 'True')
+match = match.replace(False, 'False')
+# Validação das partidas iguais
+oitfinal['Validação'] = match + match.shift(1)
+
+oitfinal['Validação'].fillna('FalseFalse', inplace=True)
+mask = oitfinal['Validação'] == 'TrueFalse'
+mask2 = oitfinal['Validação'] == 'FalseTrue'
+mask3 = oitfinal['Validação'] == 'FalseFalse'
+oitfinal.loc[mask, 'Check1'] = oitfinal.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
+oitfinal.loc[mask2, 'Check2'] = oitfinal.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
+MaxDupMatches = oitfinal['Check1'].max()
+oitfinal.loc[mask3, 'Check3'] = oitfinal.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
+
+oitfinal['Partidas'] = oitfinal['Check1'].fillna(0) + oitfinal['Check2'].fillna(0) + oitfinal['Check3'].fillna(0)
+oitfinal = oitfinal.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
+
 oitfinal.to_sql("RoundOf16", con=engine, schema = "WorldCup", if_exists='replace')

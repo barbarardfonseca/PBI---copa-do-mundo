@@ -10,31 +10,31 @@ from datetime import datetime
 
 # extrair data de hoje
 hoje = dt.date.today()
-ano_atual = hoje.year
+CurrentYear = hoje.year
 
 # engine que conecta no banco
 engine = create_engine('postgresql+psycopg2://admin:123456@localhost:5432/postgresql_db')
 
 
 print('start loop')
-# loop que extrai todas as tabelas da copa do mundo da Wiki, de todos os anos
-for ano in range(1930,ano_atual,4):
-   if ano not in(1942, 1946):
-    globals()[f"link{ano}"] = f"https://pt.wikipedia.org/wiki/Copa_do_Mundo_FIFA_de_{ano}"
-    globals()[f"tabelas{ano}"] = pd.read_html(globals()[f"link{ano}"])
-    globals()[f"qtd_tabelas{ano}"] = len(globals()[f"tabelas{ano}"])
-    for x in range(0, globals()[f"qtd_tabelas{ano}"]):
+# loop que extrai todas as tabelas da copa do mundo da Wiki, de todos os Years
+for Year in range(1930,CurrentYear,4):
+   if Year not in(1942, 1946):
+    globals()[f"link{Year}"] = f"https://pt.wikipedia.org/wiki/Copa_do_Mundo_FIFA_de_{Year}"
+    globals()[f"tabelas{Year}"] = pd.read_html(globals()[f"link{Year}"])
+    globals()[f"qtd_tabelas{Year}"] = len(globals()[f"tabelas{Year}"])
+    for x in range(0, globals()[f"qtd_tabelas{Year}"]):
       #x é o número da tabela
-      for z in globals()[f"tabelas{ano}"]:
-        globals()[f"pd{ano}{x:02}"] = pd.DataFrame(globals()[f"tabelas{ano}"][x])
-        globals()[f"pd{ano}{x:02}"]["Ano"] = ano
-        globals()[f"pd{ano}{x:02}"]["MatchNum"] = x
+      for z in globals()[f"tabelas{Year}"]:
+        globals()[f"pd{Year}{x:02}"] = pd.DataFrame(globals()[f"tabelas{Year}"][x])
+        globals()[f"pd{Year}{x:02}"]["Year"] = Year
+        globals()[f"pd{Year}{x:02}"]["MatchNum"] = x
         # insere todas tabelas no excel, usado pra documentação
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Bárbara/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Barbara.rohr/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
 
    else:
-     print(ano)
+     print(Year)
 print('end loop')
 
 
@@ -61,17 +61,17 @@ dfH['b'] = newdata['Unnamed: 1']
 dfH['c'] = newdata['Unnamed: 2']
 dfH['d'] = newdata['Unnamed: 3']
 
-dfH['datas'] = dfH['Unnamed: 0'].map(str) + dfH[0].map(str)
+dfH['Date'] = dfH['Unnamed: 0'].map(str) + dfH[0].map(str)
 dfH['Team1'] = dfH['a'].map(str) + dfH[1].map(str)
-dfH['placar'] = dfH['b'].map(str) + dfH[2].map(str)
+dfH['Score'] = dfH['b'].map(str) + dfH[2].map(str)
 dfH['Team2'] = dfH['c'].map(str) + dfH[3].map(str)
 dfH['estadios'] = dfH['d'].map(str) + dfH[4].map(str)
 
 # limpeza dos dados
 dfH = dfH.drop(columns = ['Unnamed: 0', 'Unnamed: 1','Unnamed: 2','Unnamed: 3', 0,'a', 1,'b', 2,'c', 3,'d', 4])
 
-dfH = dfH.loc[(dfH['placar'] !=  'nannan' )]
-dfH = dfH.loc[(dfH['placar'] !=  'nanRelatório[3]' )] 
+dfH = dfH.loc[(dfH['Score'] !=  'nannan' )]
+dfH = dfH.loc[(dfH['Score'] !=  'nanRelatório[3]' )] 
 
 dfH = dfH.apply(lambda x: x.astype(str).str.replace("nan", ""))
 dfH = dfH.apply(lambda x: x.astype(str).str.replace("16:00", ""))
@@ -90,26 +90,26 @@ dfH = dfH.apply(lambda x: x.astype(str).str.replace("(", ""))
 dfH = dfH.apply(lambda x: x.astype(str).str.replace(")", ""))
 
     
-dfH.loc[dfH.datas=='Espanha','datas']='14 de junho'
-dfH.loc[dfH.datas=='Colômbia','datas']='19 de junho'
-dfH.loc[dfH.datas=='Japão','datas']='24 de junho'
-dfH.loc[dfH.datas=='Senegal','datas']='28 de junho'
-dfH.loc[dfH.datas=='Uruguai','datas']='24 de novembro'
+dfH.loc[dfH.Date=='Espanha','Date']='14 de junho'
+dfH.loc[dfH.Date=='Colômbia','Date']='19 de junho'
+dfH.loc[dfH.Date=='Japão','Date']='24 de junho'
+dfH.loc[dfH.Date=='Senegal','Date']='28 de junho'
+dfH.loc[dfH.Date=='Uruguai','Date']='24 de novembro'
 
 
-dfH.loc[dfH.index==28,'datas']='19 de junho' # repetido
-dfH.loc[dfH.index==31,'datas']='23 de junho' # repetido
+dfH.loc[dfH.index==28,'Date']='19 de junho' # repetido
+dfH.loc[dfH.index==31,'Date']='23 de junho' # repetido
 
-dfH.loc[dfH.index==34,'datas']='17 de junho' # repetido
-dfH.loc[dfH.index==37,'datas']='22 de junho' # repetido
+dfH.loc[dfH.index==34,'Date']='17 de junho' # repetido
+dfH.loc[dfH.index==37,'Date']='22 de junho' # repetido
 
-dfH.loc[dfH.index==40,'datas']='26 de junho' # repetido
-dfH.loc[dfH.index==55,'datas']='28 de novembro' # repetido
+dfH.loc[dfH.index==40,'Date']='26 de junho' # repetido
+dfH.loc[dfH.index==55,'Date']='28 de novembro' # repetido
 
-dfH.loc[dfH.index==28,'datas']='19 de junho' # repetido
-dfH.loc[dfH.index==58,'datas']='02 de dezembro' # repetido
+dfH.loc[dfH.index==28,'Date']='19 de junho' # repetido
+dfH.loc[dfH.index==58,'Date']='02 de dezembro' # repetido
 
-sepDate = dfH["datas"].str.split(" ", expand=True)
+sepDate = dfH["Date"].str.split(" ", expand=True)
 dfH['day'] = sepDate[0]
 
 # Dicionário para mapear nomes de meses para números
@@ -129,16 +129,16 @@ meses_para_numeros = {
     }
 
 # Aplicar a transformação no DataFrame
-dfH['Mês_Numérico'] = sepDate[2].map(meses_para_numeros)
+dfH['NumericMonth'] = sepDate[2].map(meses_para_numeros)
 # Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
-dfH['datas'] = dfH.apply(lambda row: '-'.join(row[['Ano', 'Mês_Numérico','day']].astype(str)), axis=1)
+dfH['Date'] = dfH.apply(lambda row: '-'.join(row[['Year', 'NumericMonth','day']].astype(str)), axis=1)
 
 
 # separar gols time 1 x time 2
-placar = dfH["placar"].str.split("–", n=1, expand=True)
-dfH['gols time 1'] = placar[0]
-dfH['gols time 2'] = placar[1]
-dfH = dfH.drop(columns = ['placar'])
+Score = dfH["Score"].str.split("–", n=1, expand=True)
+dfH['gols time 1'] = Score[0]
+dfH['gols time 2'] = Score[1]
+
 
 # formatar gols em número
 dfH['gols time 1'] = dfH['gols time 1'].astype(int)
@@ -148,9 +148,32 @@ dfH['gols time 2'] = dfH['gols time 2'].astype(int)
 # end tratamento gpH
 
 # ############################################################################################
+dfH['Match'] = dfH['Date'].astype(str) + dfH['Team1'] + dfH['Team2']
+# Crie uma nova coluna 'MatchNum_Anterior' com os valores de 'MatchNum' deslocados uma linha para cima
+dfH['Match-1'] = dfH['Match'].shift(1)
 
-# print('end')
-# print(datetime.now())
+# Comparar registros com a linha anterior
+dfH['Match'] = dfH['Match'] == dfH['Match-1']
+# Variável temporária para armazenar o valor da coluna `MatchNum`
+match = dfH['Match']
+
+match = match.replace(True, 'True')
+match = match.replace(False, 'False')
+# Validação das partidas iguais
+dfH['Validação'] = match + match.shift(1)
+
+dfH['Validação'].fillna('FalseFalse', inplace=True)
+mask = dfH['Validação'] == 'TrueFalse'
+mask2 = dfH['Validação'] == 'FalseTrue'
+mask3 = dfH['Validação'] == 'FalseFalse'
+dfH.loc[mask, 'Check1'] = dfH.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
+dfH.loc[mask2, 'Check2'] = dfH.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
+MaxDupMatches = dfH['Check1'].max()
+dfH.loc[mask3, 'Check3'] = dfH.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
+
+dfH['Partidas'] = dfH['Check1'].fillna(0) + dfH['Check2'].fillna(0) + dfH['Check3'].fillna(0)
+dfH = dfH.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
+
 
 # depois de tudo pronto talvez eu junte todos os grupos. Inserir os dataframes resultantes no banco
 
