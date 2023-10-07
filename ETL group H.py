@@ -28,6 +28,7 @@ for ano in range(1930,ano_atual,4):
       for z in globals()[f"tabelas{ano}"]:
         globals()[f"pd{ano}{x:02}"] = pd.DataFrame(globals()[f"tabelas{ano}"][x])
         globals()[f"pd{ano}{x:02}"]["Ano"] = ano
+        globals()[f"pd{ano}{x:02}"]["MatchNum"] = x
         # insere todas tabelas no excel, usado pra documentação
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Bárbara/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Barbara.rohr/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
@@ -46,6 +47,7 @@ dfgpH = [pd199854, pd199855, pd199856, pd199857, pd199858, pd199859, pd200258, p
 dfH = pd.DataFrame()
 for i in range(0,len(dfgpH)): 
   dfgpH[i]['Grupo'] = 'H'
+  dfgpH[i]['Stage'] = 'GroupStage'
   dfH = pd.concat([dfH, dfgpH[i]])
 dfH.reset_index(inplace=True, drop=True)
 # tratamento de dataframe do grupo E para a data da partida aparecer na mesma linha dos dados da partida
@@ -60,9 +62,9 @@ dfH['c'] = newdata['Unnamed: 2']
 dfH['d'] = newdata['Unnamed: 3']
 
 dfH['datas'] = dfH['Unnamed: 0'].map(str) + dfH[0].map(str)
-dfH['pais1'] = dfH['a'].map(str) + dfH[1].map(str)
+dfH['Team1'] = dfH['a'].map(str) + dfH[1].map(str)
 dfH['placar'] = dfH['b'].map(str) + dfH[2].map(str)
-dfH['pais2'] = dfH['c'].map(str) + dfH[3].map(str)
+dfH['Team2'] = dfH['c'].map(str) + dfH[3].map(str)
 dfH['estadios'] = dfH['d'].map(str) + dfH[4].map(str)
 
 # limpeza dos dados
@@ -107,6 +109,29 @@ dfH.loc[dfH.index==55,'datas']='28 de novembro' # repetido
 dfH.loc[dfH.index==28,'datas']='19 de junho' # repetido
 dfH.loc[dfH.index==58,'datas']='02 de dezembro' # repetido
 
+sepDate = dfH["datas"].str.split(" ", expand=True)
+dfH['day'] = sepDate[0]
+
+# Dicionário para mapear nomes de meses para números
+meses_para_numeros = {
+    'janeiro': 1,
+    'fevereiro': 2,
+    'março': 3,
+    'abril': 4,
+    'maio': 5,
+    'junho': 6,
+    'julho': 7,
+    'agosto': 8,
+    'setembro': 9,
+    'outubro': 10,
+    'novembro': 11,
+    'dezembro': 12
+    }
+
+# Aplicar a transformação no DataFrame
+dfH['Mês_Numérico'] = sepDate[2].map(meses_para_numeros)
+# Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
+dfH['datas'] = dfH.apply(lambda row: '-'.join(row[['Ano', 'Mês_Numérico','day']].astype(str)), axis=1)
 
 
 # separar gols time 1 x time 2
@@ -129,5 +154,5 @@ dfH['gols time 2'] = dfH['gols time 2'].astype(int)
 
 # depois de tudo pronto talvez eu junte todos os grupos. Inserir os dataframes resultantes no banco
 
-dfH.to_sql("group H", con=engine, schema = "world_cup", if_exists='replace')
+dfH.to_sql("GroupH", con=engine, schema = "WorldCup", if_exists='replace')
 print('end')

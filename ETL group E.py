@@ -26,6 +26,7 @@ for ano in range(1930,ano_atual,4):
       for z in globals()[f"tabelas{ano}"]:
         globals()[f"pd{ano}{x:02}"] = pd.DataFrame(globals()[f"tabelas{ano}"][x])
         globals()[f"pd{ano}{x:02}"]["Ano"] = ano
+        globals()[f"pd{ano}{x:02}"]["MatchNum"] = x
         # insere todas tabelas no excel, usado pra documentação
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Bárbara/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Barbara.rohr/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
@@ -44,6 +45,7 @@ dfgpE = [pd198233, pd198234, pd198235, pd198236, pd198237, pd198238, pd198633, p
 dfE = pd.DataFrame()
 for i in range(0,len(dfgpE)): 
   dfgpE[i]['Grupo'] = 'E'
+  dfgpE[i]['Stage'] = 'GroupStage'
   dfE = pd.concat([dfE, dfgpE[i]])
 dfE.reset_index(inplace=True, drop=True)
 # tratamento de dataframe do grupo E para a data da partida aparecer na mesma linha dos dados da partida
@@ -57,43 +59,68 @@ dfE['b'] = newdata['Unnamed: 1']
 dfE['c'] = newdata['Unnamed: 2']
 dfE['d'] = newdata['Unnamed: 3']
 
-dfE['datas'] = dfE['Unnamed: 0'].map(str) + dfE[0].map(str)
-dfE['pais1'] = dfE['a'].map(str) + dfE[1].map(str)
-dfE['placar'] = dfE['b'].map(str) + dfE[2].map(str)
-dfE['pais2'] = dfE['c'].map(str) + dfE[3].map(str)
+dfE['Date'] = dfE['Unnamed: 0'].map(str) + dfE[0].map(str)
+dfE['Team1'] = dfE['a'].map(str) + dfE[1].map(str)
+dfE['Score'] = dfE['b'].map(str) + dfE[2].map(str)
+dfE['Team2'] = dfE['c'].map(str) + dfE[3].map(str)
 dfE['estadios'] = dfE['d'].map(str) + dfE[4].map(str)
 
 # limpeza dos dados
 dfE = dfE.drop(columns = ['Unnamed: 0', 'Unnamed: 1','Unnamed: 2','Unnamed: 3', 0,'a', 1,'b', 2,'c', 3,'d', 4])
 
-dfE = dfE.loc[(dfE['placar'] !=  'nannan' )]
-dfE = dfE.loc[(dfE['placar'] !=  'nanRelatório' )]
-dfE = dfE.loc[(dfE['placar'] !=  'nanRelatório[3]' )] 
-dfE = dfE.loc[(dfE['placar'] !=  'nan(Report)' )]
+dfE = dfE.loc[(dfE['Score'] !=  'nannan' )]
+dfE = dfE.loc[(dfE['Score'] !=  'nanRelatório' )]
+dfE = dfE.loc[(dfE['Score'] !=  'nanRelatório[3]' )] 
+dfE = dfE.loc[(dfE['Score'] !=  'nan(Report)' )]
 
 dfE = dfE.apply(lambda x: x.astype(str).str.replace("nan", ""))
+dfE = dfE.apply(lambda x: x.astype(str).str.replace(".º", ""))
 
-dfE.loc[dfE.datas=='Estados Unidos','datas']='12 de junho'
-dfE.loc[dfE.index==76,'datas']='17 de junho' # repetido
-dfE.loc[dfE.index==79,'datas']='22 de junho' # repetido
-dfE.loc[dfE.index==82,'datas']='15 de junho' # repetido
-dfE.loc[dfE.index==85,'datas']='20 de junho' # repetido
-dfE.loc[dfE.datas=='Honduras','datas']='25 de junho'
-dfE.loc[dfE.datas=='Costa Rica','datas']='17 de junho'
-dfE.loc[dfE.datas=='Brasil','datas']='22 de junho'
-dfE.loc[dfE.datas=='Sérvia','datas']='27 de junho'
-dfE.loc[dfE.datas=='Alemanha','datas']='23 de novembro'
-dfE.loc[dfE.index==103,'datas']='27 de novembro' # repetido
-dfE.loc[dfE.index==106,'datas']='1.º de dezembro' # repetido
+dfE.loc[dfE.Date=='Estados Unidos','Date']='12 de junho'
+dfE.loc[dfE.index==76,'Date']='17 de junho' # repetido
+dfE.loc[dfE.index==79,'Date']='22 de junho' # repetido
+dfE.loc[dfE.index==82,'Date']='15 de junho' # repetido
+dfE.loc[dfE.index==85,'Date']='20 de junho' # repetido
+dfE.loc[dfE.Date=='Honduras','Date']='25 de junho'
+dfE.loc[dfE.Date=='Costa Rica','Date']='17 de junho'
+dfE.loc[dfE.Date=='Brasil','Date']='22 de junho'
+dfE.loc[dfE.Date=='Sérvia','Date']='27 de junho'
+dfE.loc[dfE.Date=='Alemanha','Date']='23 de novembro'
+dfE.loc[dfE.index==103,'Date']='27 de novembro' # repetido
+dfE.loc[dfE.index==106,'Date']='1 de dezembro' # repetido
+
+sepDate = dfE["Date"].str.split(" ", expand=True)
+dfE['day'] = sepDate[0]
+
+# Dicionário para mapear nomes de meses para números
+meses_para_numeros = {
+    'janeiro': 1,
+    'fevereiro': 2,
+    'março': 3,
+    'abril': 4,
+    'maio': 5,
+    'junho': 6,
+    'julho': 7,
+    'agosto': 8,
+    'setembro': 9,
+    'outubro': 10,
+    'novembro': 11,
+    'dezembro': 12
+    }
+
+# Aplicar a transformação no DataFrame
+dfE['NumericMonth'] = sepDate[2].map(meses_para_numeros)
+# Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
+dfE['Date'] = dfE.apply(lambda row: '-'.join(row[['Ano', 'NumericMonth','day']].astype(str)), axis=1)
 
 # separar gols time 1 x time 2
-placar = dfE["placar"].str.split("–", n=1, expand=True)
-dfE['gols time 1'] = placar[0]
-dfE['gols time 2'] = placar[1]
-print(placar)
-print(placar[0])
-print(placar[1])
-dfE = dfE.drop(columns = ['placar'])
+Score = dfE["Score"].str.split("–", n=1, expand=True)
+dfE['gols time 1'] = Score[0]
+dfE['gols time 2'] = Score[1]
+print(Score)
+print(Score[0])
+print(Score[1])
+
 
 # formatar gols em número
 dfE['gols time 1'] = dfE['gols time 1'].astype(int)
@@ -102,10 +129,35 @@ dfE.to_excel("dfE.xlsx")
 # end tratamento gpE
 
 ############################################################################################
+dfE['Match'] = dfE['Date'].astype(str) + dfE['Team1'] + dfE['Team2']
+# Crie uma nova coluna 'MatchNum_Anterior' com os valores de 'MatchNum' deslocados uma linha para cima
+dfE['Match-1'] = dfE['Match'].shift(1)
+
+# Comparar registros com a linha anterior
+dfE['Match'] = dfE['Match'] == dfE['Match-1']
+# Variável temporária para armazenar o valor da coluna `MatchNum`
+match = dfE['Match']
+
+match = match.replace(True, 'True')
+match = match.replace(False, 'False')
+# Validação das partidas iguais
+dfE['Validação'] = match + match.shift(1)
+
+dfE['Validação'].fillna('FalseFalse', inplace=True)
+mask = dfE['Validação'] == 'TrueFalse'
+mask2 = dfE['Validação'] == 'FalseTrue'
+mask3 = dfE['Validação'] == 'FalseFalse'
+dfE.loc[mask, 'Check1'] = dfE.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
+dfE.loc[mask2, 'Check2'] = dfE.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
+MaxDupMatches = dfE['Check1'].max()
+dfE.loc[mask3, 'Check3'] = dfE.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
+
+dfE['Partidas'] = dfE['Check1'].fillna(0) + dfE['Check2'].fillna(0) + dfE['Check3'].fillna(0)
+dfE = dfE.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
 
 print('end')
 print(datetime.now())
 
 # depois de tudo pronto talvez eu junte todos os grupos. Inserir os dataframes resultantes no banco
 
-dfE.to_sql("group E", con=engine, schema = "world_cup", if_exists='replace')
+dfE.to_sql("GroupE", con=engine, schema = "WorldCup", if_exists='replace')

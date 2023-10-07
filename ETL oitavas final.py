@@ -29,6 +29,7 @@ for ano in range(1930,ano_atual,4):
       for z in globals()[f"tabelas{ano}"]:
         globals()[f"pd{ano}{x:02}"] = pd.DataFrame(globals()[f"tabelas{ano}"][x])
         globals()[f"pd{ano}{x:02}"]["Ano"] = ano
+        globals()[f"pd{ano}{x:02}"]["MatchNum"] = x
         # insere todas tabelas no excel, usado pra documentação
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Bárbara/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
         # globals()[f"pd{x}"].to_excel(f"C:/Users/Barbara.rohr/OneDrive/Documentos/estudos/PBI - copa do mundo/tabelas_wiki/pd{x}.xlsx")
@@ -49,24 +50,50 @@ for value in range(81,85,1):
   print(value)
   for i in range(0,len(globals()[f"listgp{value}"])):
     
-    globals()[f"listgp{value}"][i]['Fase'] = '8ª de final'
+    globals()[f"listgp{value}"][i]['Stage'] = 'RoundOf16'
     print('a')
-    globals()[f"listgp{value}"][i]['Grupo'] = value - 80
-    oitfinal = pd.concat([oitfinal, globals()[f"listgp{df}"][i]])
+    globals()[f"listgp{value}"][i]['Group'] = value - 80
+    oitfinal = pd.concat([oitfinal, globals()[f"listgp{value}"][i]])
 oitfinal.reset_index(inplace=True, drop=True)
 oitfinal['datas'] = oitfinal[0].map(str)
-oitfinal['país1'] = oitfinal[1].map(str)
+oitfinal['Team1'] = oitfinal[1].map(str)
 oitfinal['placar'] = oitfinal[2].map(str)
-oitfinal['país2'] = oitfinal[3].map(str)
+oitfinal['Team2'] = oitfinal[3].map(str)
 oitfinal = oitfinal.drop(columns = [0, 1, 2, 3])
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'nan' )]
-oitfinal = oitfinal.loc[(oitfinal['datas'] !=  'nan' )]
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Relatório' )]
 oitfinal = oitfinal.loc[(oitfinal['placar'] !=  'Penalidades' )]
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("(", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace(")", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("pro.", ""))
 oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace("pro", ""))
+oitfinal = oitfinal.apply(lambda x: x.astype(str).str.replace(" Prorrogação4–3 Disputa por pênaltis", ""))
+
+sepDate = oitfinal["datas"].str.split(" ", expand=True)
+oitfinal['day'] = sepDate[0]
+
+# Dicionário para mapear nomes de meses para números
+meses_para_numeros = {
+    'janeiro': 1,
+    'fevereiro': 2,
+    'março': 3,
+    'abril': 4,
+    'maio': 5,
+    'junho': 6,
+    'julho': 7,
+    'agosto': 8,
+    'setembro': 9,
+    'outubro': 10,
+    'novembro': 11,
+    'dezembro': 12
+    }
+
+# Aplicar a transformação no DataFrame
+oitfinal['Mês_Numérico'] = sepDate[2].map(meses_para_numeros)
+# Use a função apply para concatenar as colunas "teste1" a "teste5" com um espaço entre elas
+oitfinal['datas'] = oitfinal.apply(lambda row: '-'.join(row[['Ano', 'Mês_Numérico','day']].astype(str)), axis=1)
+
+
 # separar gols time 1 x time 2
 placar = oitfinal["placar"].str.split("–", n=1, expand=True)
 oitfinal['gols time 1'] = placar[0]
@@ -74,4 +101,4 @@ oitfinal['gols time 2'] = placar[1]
 oitfinal = oitfinal.drop(columns = ['placar'])
 
 print(oitfinal)
-oitfinal.to_sql("Oitavas de Final", con=engine, schema = "world_cup", if_exists='replace')
+oitfinal.to_sql("RoundOf16", con=engine, schema = "WorldCup", if_exists='replace')
