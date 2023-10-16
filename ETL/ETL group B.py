@@ -67,6 +67,7 @@ dfB = dfB.loc[(dfB['Score'] !=  'nanRelatório[3]' )]
 dfB = dfB.loc[(dfB['Score'] !=  'nan(Report)' )]
 ######################
 dfB = dfB.apply(lambda x: x.astype(str).str.replace("nan", ""))
+dfB = dfB.apply(lambda x: x.astype(str).str.replace("15:00", ""))
 dfB.loc[dfB.Date=='Espanha','Date']='13 de junho'
 dfB.loc[dfB.index==188,'Date']='18 de junho' # repetido
 dfB.loc[dfB.index==191,'Date']='23 de junho' # repetido
@@ -142,7 +143,7 @@ dfB.loc[mask3, 'Check3'] = dfB.loc[mask3, 'Validação'].eq('FalseFalse').cumsum
 
 dfB['Partidas'] = dfB['Check1'].fillna(0) + dfB['Check2'].fillna(0) + dfB['Check3'].fillna(0)
 dfB = dfB.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
-
+# 
 # Insert on database
 dfB.to_sql("GroupB", con=Engine, schema = "WorldCup", if_exists='replace')
 print('end')

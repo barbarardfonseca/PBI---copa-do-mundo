@@ -68,6 +68,8 @@ dfC = dfC.apply(lambda x: x.astype(str).str.replace("nan", ""))
 dfC = dfC.apply(lambda x: x.astype(str).str.replace("(", ""))
 dfC = dfC.apply(lambda x: x.astype(str).str.replace(")", ""))
 dfC = dfC.apply(lambda x: x.astype(str).str.replace(" pro.", ""))
+dfC = dfC.apply(lambda x: x.astype(str).str.replace("15:00", ""))
+
 
 dfC.loc[dfC.Date=='Argentian','Date']='22 de novembro'
 dfC.loc[dfC.index==175,'Date']='14 de junho' # repetido
