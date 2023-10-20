@@ -18,13 +18,14 @@ images = soup.find_all("img", {"src": True, "title": True})
 for image in images:
     # Obtenha o URL da imagem
     url = image["src"]
+    
     name = image["title"]
     url = url.replace("?width=50&blur=10", "")
     # Baixe a imagem
     response = requests.get(url)
 
     # Salve a imagem na pasta de destino
-    filename = os.path.basename(name)
+    filename = os.path.basename(name) + ".svg"
     CompleteUrl = os.path.join(dest_dir, filename)
     CompleteUrl = os.path.normpath(CompleteUrl)
     with open(CompleteUrl, "wb") as f:
