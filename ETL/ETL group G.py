@@ -163,6 +163,8 @@ mask3 = dfG['Validação'] == 'FalseFalse'
 dfG.loc[mask, 'Check1'] = dfG.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 dfG.loc[mask2, 'Check2'] = dfG.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = dfG['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 dfG.loc[mask3, 'Check3'] = dfG.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
 
 dfG['Partidas'] = dfG['Check1'].fillna(0) + dfG['Check2'].fillna(0) + dfG['Check3'].fillna(0)

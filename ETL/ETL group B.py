@@ -139,8 +139,10 @@ mask3 = dfB['Validação'] == 'FalseFalse'
 dfB.loc[mask, 'Check1'] = dfB.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 dfB.loc[mask2, 'Check2'] = dfB.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = dfB['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 dfB.loc[mask3, 'Check3'] = dfB.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
-
+ 
 dfB['Partidas'] = dfB['Check1'].fillna(0) + dfB['Check2'].fillna(0) + dfB['Check3'].fillna(0)
 dfB = dfB.drop(columns = ['Score','NumericMonth','day','Validação', 'Check1', 'Check2', 'Check3', 'Match', 'Match-1'])
 # 

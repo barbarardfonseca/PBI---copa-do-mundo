@@ -139,6 +139,8 @@ mask3 = dfC['Validação'] == 'FalseFalse'
 dfC.loc[mask, 'Check1'] = dfC.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 dfC.loc[mask2, 'Check2'] = dfC.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = dfC['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 dfC.loc[mask3, 'Check3'] = dfC.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
 
 dfC['Partidas'] = dfC['Check1'].fillna(0) + dfC['Check2'].fillna(0) + dfC['Check3'].fillna(0)

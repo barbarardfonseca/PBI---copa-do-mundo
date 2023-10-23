@@ -169,6 +169,8 @@ mask3 = dfH['Validação'] == 'FalseFalse'
 dfH.loc[mask, 'Check1'] = dfH.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 dfH.loc[mask2, 'Check2'] = dfH.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = dfH['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 dfH.loc[mask3, 'Check3'] = dfH.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
 
 dfH['Partidas'] = dfH['Check1'].fillna(0) + dfH['Check2'].fillna(0) + dfH['Check3'].fillna(0)

@@ -119,6 +119,8 @@ mask3 = oitfinal['Validação'] == 'FalseFalse'
 oitfinal.loc[mask, 'Check1'] = oitfinal.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 oitfinal.loc[mask2, 'Check2'] = oitfinal.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = oitfinal['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 oitfinal.loc[mask3, 'Check3'] = oitfinal.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
 
 oitfinal['Partidas'] = oitfinal['Check1'].fillna(0) + oitfinal['Check2'].fillna(0) + oitfinal['Check3'].fillna(0)

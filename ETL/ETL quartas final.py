@@ -160,6 +160,8 @@ mask3 = QuartFinal['Validação'] == 'FalseFalse'
 QuartFinal.loc[mask, 'Check1'] = QuartFinal.loc[mask, 'Validação'].eq('TrueFalse').cumsum()
 QuartFinal.loc[mask2, 'Check2'] = QuartFinal.loc[mask2, 'Validação'].eq('FalseTrue').cumsum()
 MaxDupMatches = QuartFinal['Check1'].max()
+if pd.isnull(MaxDupMatches):
+    MaxDupMatches = 0
 QuartFinal.loc[mask3, 'Check3'] = QuartFinal.loc[mask3, 'Validação'].eq('FalseFalse').cumsum() + MaxDupMatches
 
 QuartFinal['Partidas'] = QuartFinal['Check1'].fillna(0) + QuartFinal['Check2'].fillna(0) + QuartFinal['Check3'].fillna(0)
